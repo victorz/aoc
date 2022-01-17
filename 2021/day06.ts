@@ -1,6 +1,15 @@
-import { getInput } from "./Util.ts"
+import { getInput, sum } from "./Util.ts"
 
-function tick(fish: number[]) {
+type FishSim = number[]
+
+function tick2(fish: FishSim) {
+  const spawning = fish[0]
+  fish.shift()
+  fish[6] += spawning
+  fish[8] = spawning
+}
+
+function tick(fish: FishSim) {
   let numNew = 0
 
   for (let i = 0; i < fish.length; i++) {
@@ -17,7 +26,7 @@ function tick(fish: number[]) {
   }
 }
 
-function part1(fish: number[]) {
+function part1(fish: FishSim) {
   for (let i = 0; i < 80; i++) {
     tick(fish)
   }
@@ -25,22 +34,28 @@ function part1(fish: number[]) {
   console.log(fish.length)
 }
 
-function part2(fish: number[]) {
-  // FIXME: Runs out of memory, need to compress by grouping fish with the same life span, should be only 9 slots! Very fast!
+function part2(ages: FishSim) {
+  const sim = buildSim(ages)
+
   for (let i = 0; i < 256; i++) {
-    tick(fish)
+    tick2(sim)
   }
 
-  console.log(fish.length)
+  console.log(sum(sim))
+}
+
+function buildSim(ages: number[]): FishSim {
+  return ages.reduce((sim, a) => {
+    sim[a]++
+    return sim
+  }, new Array(9).fill(0))
 }
 
 function main() {
-  // const inputSrc = "input/day06-input-sample.txt"
   const inputSrc = "input/day06-input.txt"
-
   const input = getInput(inputSrc).split(",").map(Number)
 
-  part1(input)
+  part1(input.slice())
   part2(input)
 }
 
