@@ -9,8 +9,9 @@ export const isNotNull = <T>(v: T | null): v is T => v != null
 export const zip2 = <T, U>(ts: T[], us: U[]): [T, U][] =>
   ts.map((t, i) => [t, us[i]])
 
-export const add = (a: number, b: number) => a + b
-export const sum = (xs: number[]) => xs.reduce(add, 0)
+export const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
+export const min = (xs: number[]) => xs.reduce((a, b) => Math.min(a, b))
+export const max = (xs: number[]) => xs.reduce((a, b) => Math.max(a, b))
 
 export function* range(start: number, end?: number) {
   if (end === undefined) {
@@ -25,4 +26,5 @@ export function* range(start: number, end?: number) {
   }
 }
 
-export const rangeToArray = (n: number) => Array.from(range(n))
+export const rangeToArray = (start: number, end: number) =>
+  Array.from(range(start, end))
