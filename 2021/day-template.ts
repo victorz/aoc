@@ -9,3 +9,5 @@ function main() {
   part1(input)
   part2(input)
 }
+
+main()
