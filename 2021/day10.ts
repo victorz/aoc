@@ -25,30 +25,63 @@ const isPair = (open: Char = "", close: Char = ""): boolean =>
   CHUNK_PAIRS.has(open) && close === CHUNK_PAIRS.get(open)
 const isOpener = (open: Char): boolean => CHUNK_PAIRS.has(open)
 
-function part1(input: string) {
-  console.log(
-    sum(
-      linesOf(input).map(line => {
-        const stack: Char[] = []
-        let errorChar: Char = ""
+const lineErrorScore = (line: string): number => {
+  const stack: Char[] = []
+  let errorChar: Char = ""
 
-        for (let ch of Array.from(line)) {
-          if (isOpener(ch)) {
-            stack.push(ch)
-          } else if (isPair(stack.at(-1), ch)) {
-            stack.pop()
-          } else {
-            errorChar = ch
-            break
-          }
-        }
+  for (const ch of line) {
+    if (isOpener(ch)) {
+      stack.push(ch)
+    } else if (isPair(stack.at(-1), ch)) {
+      stack.pop()
+    } else {
+      errorChar = ch
+      break
+    }
+  }
 
-        return errorScore(errorChar)
-      })
-    )
-  )
+  return errorScore(errorChar)
 }
-function part2(input: string) {}
+
+function part1(input: string) {
+  console.log(sum(linesOf(input).map(lineErrorScore)))
+}
+
+function autoComplete(line: string): string[] {
+  const stack: Char[] = []
+
+  for (const ch of line) {
+    if (isOpener(ch)) {
+      stack.push(ch)
+    } else if (isPair(stack.at(-1), ch)) {
+      stack.pop()
+    }
+  }
+
+  return stack
+}
+
+const COMPLETE_SCORE_MAP: Map<Char, number> = new Map([
+  ["(", 1],
+  ["[", 2],
+  ["{", 3],
+  ["<", 4],
+])
+
+function autoCompleteScore(stack: string[]): number {
+  return stack
+    .map(ch => COMPLETE_SCORE_MAP.get(ch) ?? 0)
+    .reduceRight((acc, score) => acc * 5 + score, 0)
+}
+
+function part2(input: string) {
+  const scores = linesOf(input)
+    .filter(l => lineErrorScore(l) === 0)
+    .map(autoComplete)
+    .map(autoCompleteScore)
+    .sort((a, b) => a - b)
+  console.log(scores[Math.floor(scores.length / 2)])
+}
 
 function main() {
   // const input = getInput("input/day10-input-sample.txt")
